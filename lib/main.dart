@@ -1,4 +1,5 @@
 import 'package:exam_2/screen/cart_page.dart';
+import 'package:exam_2/screen/coupon_page.dart';
 import 'package:exam_2/screen/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,6 +16,7 @@ void main() async {
       getPages: [
         GetPage(name: '/', page: () => HomePage(),),
         GetPage(name: '/cart_page', page: () => CartPage(),),
+        GetPage(name: '/coupon_page', page: () => CouponPage(),),
       ],
     ),
   );

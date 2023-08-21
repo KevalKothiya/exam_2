@@ -33,6 +33,11 @@ class DBHelper {
 
         db.execute(query1);
 
+        String query2 =
+            "CREATE TABLE IF NOT EXISTS coupon(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT, applied INTEGER);";
+
+        db.execute(query2);
+
 
       },
     );
@@ -54,22 +59,6 @@ class DBHelper {
 
       await db!.rawInsert(query, args);
     }
-  }
-
-  insertBagDB({required DataBaseProduct data}) async {
-    await initDB();
-
-      String query = "INSERT INTO bag(id, name, price, qts) VALUES(?, ?, ?, ?);";
-
-      List args = [
-        data.id,
-        data.name,
-        data.price,
-        data.qts,
-      ];
-
-      await db!.rawInsert(query, args);
-
   }
 
   Future<List<DataBaseProduct>> fetchData() async {
@@ -95,15 +84,26 @@ class DBHelper {
     return quotes;
   }
 
+  insertBagDB({required List<DataBaseProduct> data}) async {
+    await initDB();
+
+   for(int i = 0; i < data.length; i++){
+     String query = "INSERT INTO bag(id, name, price, qts) VALUES(?, ?, ?, ?);";
+
+     List args = [
+       data[i].id,
+       data[i].name,
+       data[i].price,
+       data[i].qts,
+     ];
+
+     await db!.rawInsert(query, args);
+   }
+
+  }
+
   Future<List<DataBaseBag>> fetchBagData() async {
     await initDB();
-    // if(box.read('insertBag') != true){
-    //   await insertDB();
-    // }
-
-    Insert_GC insert = Insert_GC();
-
-    // insert.trueWhenInsert();
 
     String query = "SELECT * FROM bag";
 
@@ -127,6 +127,16 @@ class DBHelper {
 
     await db!.rawUpdate(query,args);
   }
+
+  deleteBagAllItemDB() async {
+    await initDB();
+
+    String query = "DELETE FROM bag";
+
+    await db!.rawUpdate(query);
+
+  }
+
   deleteBagDB({required int id}) async {
     await initDB();
 
@@ -135,5 +145,49 @@ class DBHelper {
     List args = [id];
 
     await db!.rawUpdate(query,args);
+  }
+
+  insertCouponDB({required String name, required bool applied}) async {
+    await initDB();
+    print("Start");
+
+    int applyCoupon = (applied)?1:0;
+    String query = "INSERT INTO coupon(name, applied) VALUES(?, ?);";
+
+    List args = [
+      name,
+      applyCoupon,
+    ];
+
+    await db!.rawInsert(query, args);
+    print("End");
+  }
+
+  Future<List<DataBaseCoupon>> fetchCouponDB() async {
+    await initDB();
+
+    String sql = "SELECT * FROM coupon";
+
+    List<Map<String, dynamic>> decoded = await db!.rawQuery(sql);
+
+    List<DataBaseCoupon> data = decoded.map((e) => DataBaseCoupon.fromMap(data: e)).toList();
+
+    return data;
+  }
+
+  updateCouponDB({required String name, required bool applied}) async {
+    await initDB();
+
+    int isApply = applied ? 1 : 0;
+
+    String sql = "UPDATE coupon SET applied = ? WHERE name = ?;";
+
+    List args = [
+      isApply,
+      name,
+    ];
+
+    db!.rawUpdate(sql, args);
+
   }
 }

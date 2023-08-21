@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'package:exam_2/model/product_model/product.dart';
 import 'package:exam_2/utils/helper/local_helper.dart';
 import 'package:exam_2/utils/utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({Key? key}) : super(key: key);
@@ -17,12 +20,22 @@ class _CartPageState extends State<CartPage> {
   void initState() {
     super.initState();
     getDataBag = DBHelper.dbHelper.fetchBagData();
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () async {
+            await DBHelper.dbHelper.deleteBagAllItemDB();
+            Get.back();
+          },
+          icon: Icon(
+            CupertinoIcons.back,
+          ),
+        ),
         title: Text("Cart Page"),
       ),
       body: Container(
@@ -37,7 +50,7 @@ class _CartPageState extends State<CartPage> {
                 List<DataBaseBag>? data = ss.data;
                 return (data == null || data.isEmpty)
                     ? Center(
-                        child: Text("Error"),
+                        child: Text("Empty"),
                       )
                     : Column(
                         children: [
@@ -49,7 +62,25 @@ class _CartPageState extends State<CartPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Total Price : $totalPrice'),
+                                  Text(
+                                    'Total Price : $totalPrice',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      ElevatedButton(
+                                          onPressed: () {
+                                            Get.toNamed('/coupon_page');
+                                          },
+                                          child: Text("Apply Coupon")),
+                                    ],
+                                  )
                                 ],
                               ),
                             ),
@@ -110,12 +141,37 @@ class _CartPageState extends State<CartPage> {
                                 }),
                           ),
                           Expanded(
-                            child: ElevatedButton(
-                              style: ButtonStyle(
-                                fixedSize: MaterialStatePropertyAll(Size(50, 20))
-                              ),
-                              onPressed: () {},
-                              child: Text("Check Out"),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Spacer(),
+                                ElevatedButton(
+                                  style: ButtonStyle(
+                                      fixedSize: MaterialStatePropertyAll(
+                                          Size(250, 50))),
+                                  onPressed: () async {
+                                    DBHelper.dbHelper.insertCouponDB(
+                                        name: controller.text, applied: true);
+                                    Get.snackbar(
+                                        "Success", "Payment Done SuccessFully!",
+                                        snackPosition: SnackPosition.BOTTOM,
+                                        backgroundColor: Colors.green);
+                                    controller.clear();
+                                    name = null;
+                                    Get.dialog(AlertDialog(
+                                      content: Text("Thank You for Shopping!"),
+                                    )).then((value) => Future.delayed(
+                                            Duration(seconds: 3), () {
+                                          Get.back();
+                                          Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false).then((value) => setState((){}));
+                                        }));
+                                    await DBHelper.dbHelper.deleteBagAllItemDB();
+                                    checkout.clear();
+                                  },
+                                  child: Text("Check Out"),
+                                ),
+                                Spacer(),
+                              ],
                             ),
                           ),
                         ],

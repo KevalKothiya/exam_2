@@ -18,12 +18,12 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    deleteData();
     getData = DBHelper.dbHelper.fetchData();
-    localData();
   }
 
-  localData() async {
-    print("${getData}");
+  deleteData() async {
+    await DBHelper.dbHelper.deleteBagAllItemDB();
   }
 
   @override
@@ -35,7 +35,9 @@ class _HomePageState extends State<HomePage> {
           Stack(
             children: [
               IconButton(
-                onPressed: () {
+                onPressed: () async {
+                  await DBHelper.dbHelper.insertBagDB(data: checkout);
+
                   Get.toNamed('cart_page');
                 },
                 icon: Icon(
@@ -75,8 +77,8 @@ class _HomePageState extends State<HomePage> {
                                   IconButton(
                                     onPressed: () {
                                       print("1");
-                                      DBHelper.dbHelper.insertBagDB(data: data[i]);
-
+                                      // DBHelper.dbHelper.insertBagDB(data: data[i]);
+                                      checkout.add(data[i]);
                                       totalPrice += data[i].price;
                                       print("2");
                                     },

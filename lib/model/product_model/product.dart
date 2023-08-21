@@ -12,7 +12,7 @@ class Product {
   });
 }
 
-class DataBaseProduct{
+class DataBaseProduct {
   late int id;
   late String name;
   late int price;
@@ -25,11 +25,16 @@ class DataBaseProduct{
     required this.qts,
   });
 
-  factory DataBaseProduct.fromMap({required Map data}){
-    return DataBaseProduct(id: data['id'], name: data['name'], price: data['price'], qts: data['qts']);
+  factory DataBaseProduct.fromMap({required Map data}) {
+    return DataBaseProduct(
+        id: data['id'],
+        name: data['name'],
+        price: data['price'],
+        qts: data['qts']);
   }
 }
-class DataBaseBag{
+
+class DataBaseBag {
   late int id;
   late String name;
   late int price;
@@ -42,7 +47,31 @@ class DataBaseBag{
     required this.qts,
   });
 
-  factory DataBaseBag.fromMap({required Map data}){
-    return DataBaseBag(id: data['id'], name: data['name'], price: data['price'], qts: data['qts']);
+  factory DataBaseBag.fromMap({required Map data}) {
+    return DataBaseBag(
+        id: data['id'],
+        name: data['name'],
+        price: data['price'],
+        qts: data['qts']);
+  }
+}
+
+class DataBaseCoupon {
+  late int id;
+  late String name;
+  late bool applied;
+
+  DataBaseCoupon({
+    required this.id,
+    required this.name,
+    required this.applied,
+  });
+
+  factory DataBaseCoupon.fromMap({required Map data}) {
+    return DataBaseCoupon(
+      id: data['id'],
+      name: data['name'],
+      applied: (data['applied'] == 0) ? false : true,
+    );
   }
 }
